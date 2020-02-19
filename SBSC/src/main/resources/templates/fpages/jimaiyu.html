@@ -1,0 +1,45 @@
+﻿<head lang="en">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>点标记</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <style>
+        html,body,#container{
+            height:100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="container" ></div>
+    <div class="info" style='min-width:10rem;'>
+        <img src="//a.amap.com/lbs/static/img/js-markonapp.png" style='width:120px;height:120px'>
+        <div style='text-align: center'>手机扫码打开示例</div>
+    </div>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=您申请的key值"></script>
+    <script>
+        var map = new AMap.Map("container", {
+            zoom: 18,
+            center:[113.313636,23.085214]
+        });
+        var marker = new AMap.Marker({
+            map:map,
+            position:[113.313636,23.085214],
+            label: {
+                offset: new AMap.Pixel(30, 30),//修改label相对于maker的位置
+                content: "喜悦名表商铺"
+            } 
+        })
+        marker.on('click',function(e){
+            marker.markOnAMAP({
+                name:'喜悦名表商铺',
+                position:marker.getPosition()
+            })
+        })
+        if(AMap.UA.mobile){
+            document.getElementsByClassName('info')[0].style.display='none';
+        }
+
+    </script>
+</body>
+</html>

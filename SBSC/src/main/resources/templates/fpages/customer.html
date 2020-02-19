@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>联系客服</title>
+<link rel="stylesheet" type="text/css" href="css/easyui.css">
+
+<script type="text/javascript" src="Script/jquery.js"></script>
+<!-- <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="js/json2.js"></script> -->
+<style type="text/css">
+* {
+	font-size: 14px;
+	padding: 0;
+	margin: 0;
+}
+
+#chatRecord {
+	position: relative;
+	margin: 20px auto;
+	border: 1px solid steelblue;
+	width: 300px;
+	height: 400px;
+}
+
+.msgContent {
+	width: auto;
+	max-width: 250px;
+	height: auto;
+	word-break: break-all;
+	margin: 5px;
+	padding: 3px;
+	border-radius: 5px;
+}
+
+#chatZone .left {
+	list-style: none;
+	text-align: left;
+}
+
+#chatZone .left .p {
+	float: left;
+	text-align: left;
+	background-color: lightgrey;
+	font-size: 2ex;
+}
+
+#chatZone .left .title {
+	text-align: left;
+	font-size: 10px;
+	color: grey;
+}
+
+#chatZone .right {
+	float: right;
+	list-style: none;
+	text-align: right;
+}
+
+#chatZone .right .title {
+	text-align: right;
+	font-size: 10px;
+	color: grey;
+	clear: both;
+}
+
+#chatZone .right .p {
+	float: right;
+	text-align: right;
+	background-color: yellowgreen;
+	font-size: 2ex;
+}
+</style>
+</head>
+<body >
+
+	<p>
+		帐号<input type="text" id="linkAgent" class="easyui-textbox"
+			style="width: 150px" /> 昵称<input type="text" id="nickname"
+			class="easyui-textbox" style="width: 150px" /> <a id="btnLink"
+			href="javascript:void(0)" class="easyui-linkbutton c1">开始聊天</a>
+	</p>
+	<div data-options="region:'center'" class="easyui-panel" style="width: 80%; height: 350px; padding: 5px;" id="chatRecord">
+		<ul class="chatDialog-main clearfix" id="chatZone">
+
+
+
+		</ul>
+	</div>
+	<div class="easyui-panel" style="width: 70%; padding: 3px;display:inline">
+		
+		<textarea id="txtMessage" name="txtMessage"
+									style="width: 70%; height: 30%; display: inline; margin-left: 10%"></textarea>
+							
+	</div>
+	<div style="display:inline; right;">
+		<button id="btnSend" style="width: 60px;height: 25px;display:inline">发送</button>
+	</div>
+
+</body>
+<script type="text/javascript">
+function getNowFormatDate() {
+    var date = new Date();
+    var seperator1 = "-";
+    var seperator2 = ":";
+    var month = date.getMonth() + 1;
+    var strDate = date.getDate();
+   	var hours = date.getHours();
+   	var minutes = date.getMinutes();
+   	var seconds = date.getSeconds();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+    if (hours >= 0 && hours <= 9) {
+    	hours = "0" + hours;
+    }
+    if (minutes >= 0 && minutes <= 9) {
+    	minutes = "0" + minutes;
+    }
+    if (seconds >= 0 && seconds <= 9) {
+    	seconds = "0" + seconds;
+    }
+    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+            + " " + hours + seperator2 + minutes
+            + seperator2 + seconds;
+    return currentdate;
+}
+$(function() {
+	var websocket;
+	var nickname;
+	$(window).keyup(function(event){
+		if(event.keyCode == 13) {
+			$("#btnSend").click();
+			return true;
+        } 
+	});
+	
+	//发送消息
+	$("#btnSend").click(function() {
+		//这个到时候用id代替 
+		var from = $("#linkAgent").val();
+		var msg = $("#txtMessage").val();
+		var obj=new Object();
+		obj.from=from;
+		obj.message=msg;	
+		obj.nickname=nickname;
+		
+		var json = JSON.stringify(obj);
+		var result =websocket.send(json);
+		var message ="<li class='msgContent right'>"+
+						"<p class='msgContent right title'>"+nickname+" ("+getNowFormatDate()+"):</p>"+"<br/>"+
+		   				"<p class='msgContent right p'>"+msg+"</p></li>"
+		   				+"<div style='clear:both'></div>";
+		$("#chatZone").append(message);
+		$("#txtMessage").val("");
+		
+		//console.log($("#chatZone").size());
+		
+		$("li").slice(0,-4).css("display","none");
+		
+		
+	});
+	
+	//建立连接 
+	$("#btnLink").click(function() {
+		var agent = $("#linkAgent").val();
+		nickname = $("#nickname").val();
+		if('WebSocket' in window){
+			
+		}else{
+			alert("您的浏览器版本太低，请升级浏览器版本！");
+			return;
+		}
+		if('WebSocket' in window){
+			var wsUrl = "ws://"+window.location.host+"/customer/";			
+			websocket = new WebSocket(wsUrl+agent);		     
+		   //连接发生错误的回调方法
+		     websocket.onerror = function(){
+		         console.log(" websocket.onerror :error");
+		     };
+		     //连接成功建立的回调方法
+		     websocket.onopen = function(event){
+		     	
+		     }
+		     //接收到消息的回调方法
+		     websocket.onmessage = function(event){	    	 
+		    	 console.log(event);
+		    	 //console.log(typeof(event));	    	 
+		    	 msg = eval('(' + event.data + ')');	
+
+		    	 if(typeof(msg)=="number"){
+		    		 console.log("---"+typeof(msg));
+		    		 
+		    		 if(msg == -1){
+		    			 $("#chatZone").empty();
+		    			 var content = "当前没有客服在线，请留言！";
+		    			 //出现留言框！！！
+		    			 //
+		    			 //
+	  			 
+		    		 }else if(msg == 0){
+		    			 $("#chatZone").empty();
+		    			 var content = "当前客服忙！请稍等...";
+		    		 }else if(msg>0){
+		    			 $("#chatZone").empty();
+		    			 var content = "感谢您的耐心等待！成功为您接入客服! ";
+		    		 }
+		    		 $("#chatZone").append(content);
+		    		 
+		    	 }else if(typeof(msg)=="object"){
+		    		 console.log("---"+typeof(msg));
+		    		 //显示消息 
+		    		 if(msg.from != agent) {
+			    		 var message ="<li class='msgContent left'>"+
+							"<p class='msgContent left title'>"+msg.nickname+" ("+getNowFormatDate()+"):</p>"+
+			   				"<p class='msgContent left p'>"+msg.message+"</p></li>"+
+			   				"<div style='clear:both'></div>";
+							$("#chatZone").append(message);
+							$("li").slice(0,-4).css("display","none");
+			    	 }
+	    		 		    		 
+		    	 }else{//js异常可怎么办？往哪处理？？ 
+		    		 console.log("error message type");
+		    	 }	     	
+		     }
+ 
+		     //连接关闭的回调方法
+		     websocket.onclose = function(){
+		    	console.log(" websocket.onclose :close");
+		   		websocket = new WebSocket(wsUrl+agent);
+		     }
+ 
+		     //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+		     window.onbeforeunload = function(){
+		         websocket.close();
+		     }
+		}
+	});
+	
+});
+</script>
+</html>

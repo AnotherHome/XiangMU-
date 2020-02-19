@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.dao.WatchInfDao">
+
+	<!-- 结果集映射 因为列名与pojo属性名不同的情况下会报异常 所以通过结果集映射,将列名(column)与属性名(propertity)关联起来 
+		查询返回的结果集会自动调用set方法,将对应的数据传入pojo属性中 id 对应主键 result 对应其他普通列 -->
+	<resultMap type="com.cy.common.pojo.WatchInf" id="WatchInfResultMap">
+		<id column="id" property="id" />
+		<result column="watch_img" property="watchImg" />
+		<result column="watch_name" property="watchName" />
+		<result column="watch_introduce" property="watchIntroduce" />
+		<result column="watch_price" property="watchPrice" />
+		<result column="watch_sale" property="watchSale" />
+		<result column="watch_inventory" property="watchInventory" />
+		<result column="watch_sell" property="watchSell" />
+		<result column="watch_like" property="watchLike" />
+		<result column="watch_comment" property="watchComment" />
+		<result column="watch_levelId" property="watchLevelId" />
+		<result column="watch_sex" property="watchSex" />
+	</resultMap>
+
+	<!-- 如果有传入watchName的数值时才会有where条件 -->
+	<sql id="ifName">
+		<where>
+			<if test="watchName!=null and watchName!=''">
+				watch_name like concat("%",#{watchName},"%")
+			</if>
+			<!-- 库存大于1,即有库存的情况下才显示结果  -->
+			and watch_inventory > 1 and watch_sale &lt; watch_price
+		</where>
+	</sql>
+
+	<!-- 查找watch(商品)表中的所有数据,返回结果通过结果集映射赋值给pojo -->
+	<select id="findWatchs" resultMap="WatchInfResultMap">
+		select * from watch
+	</select>
+
+	<!-- 根据id查找符合条件的商品信息 -->
+	<select id="findWatchById" resultMap="WatchInfResultMap">
+		select
+		*
+		from watch
+		where id = #{id}
+	</select>
+
+	<!-- 分页查询,链接了上面的sql startIndex 从第几条记录开始 pageSize 显示几条 如,从第20条记录开始,显示10条,输出结果集中第20到30的记录 -->
+	<select id="findPageObjects" resultMap="WatchInfResultMap">
+		select *
+		from watch
+		<include refid="ifName"></include>
+		limit #{startIndex},#{pageSize}
+	</select>
+
+	<!-- 统计记录数量 -->
+	<select id="getRowCount" resultType="int">
+		select count(*)
+		from watch
+		<include refid="ifName"></include>
+	</select>
+
+</mapper>
+

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.cy.dao.JmDao">
+
+ <!-- 寄卖添加数据层sql语句 -->
+     <insert id="insertjm" >
+            insert into jm(id,jm_watchName,jm_model,jm_img,
+                    jm_price,jm_username,jm_tel,jm_email,
+                    jm_qq,jm_other)
+             values(null,#{jmWatchName},#{jmModel},#{jmImg},
+             #{jmPrice},#{jmUsername},#{jmTel},
+             #{jmEmail},#{jmQq},#{jmText});
+     </insert>
+
+    
+  </mapper>
+  

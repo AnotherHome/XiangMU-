@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.dao.SbscWatchDao">
+<resultMap type="com.cy.common.pojo.SbscWatch" id="watchResultMap">
+		<id column="id" property="id"/>
+		<result column="watch_img" property="watchImg"/>
+		<result column="watch_name" property="watchName"/>
+		<result column="watch_introduce" property="watchIntroduce"/>
+		<result column="watch_price" property="watchPrice"/>
+		<result column="watch_sale" property="watchSale"/>
+		<result column="watch_inventory" property="watchInventory"/>
+		<result column="watch_sell" property="watchSell"/>
+		<result column="watch_like" property="watchLike"/>
+		<result column="watch_comment" property="watchComment"/>
+		<result column="watch_levelId" property="watchLevelId"/>
+		<result column="watch_sex" property="watchSex"/>
+	</resultMap>
+<!-- 查询 图片名  商品名 价格 优惠价 已售出 条件 男士where watch_sex=#{watchSex}-->
+<select id="findSexObject"  resultMap="watchResultMap">
+select * from watch where watch_sex=#{watchSex} and watch_price!=watch_sale 
+</select>
+
+<select id="findSexObjectLevel" resultMap="watchResultMap">
+select * from watch where watch_levelId=#{watchLevelId} and watch_sex=#{watchSex}
+</select>
+
+</mapper>

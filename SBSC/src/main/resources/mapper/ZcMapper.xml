@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.cy.dao.ZcDao">
+ 
+ <!-- 注册添加数据层sql语句 -->
+     <insert id="inObject" >
+            insert into member(id,username,password,memberName,
+                    memberEmail,memberTel)
+             values(null,#{username},#{password},#{memberName},
+             #{memberEmail},#{memberTel});
+     </insert>
+  
+    
+  </mapper>
+  
